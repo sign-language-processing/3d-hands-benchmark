@@ -1,0 +1,5 @@
+mediapipe
+Pillow
+tqdm
+numpy
+opencv-python
