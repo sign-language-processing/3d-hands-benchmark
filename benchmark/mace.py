@@ -1,6 +1,6 @@
-import numpy as np
-
 import math
+
+import numpy as np
 from scipy.spatial.transform import Rotation
 
 
@@ -93,6 +93,18 @@ def normalize_hands(poses: np.ndarray):
     return np.array([[normalized_hand(p) for p in ps] for ps in poses])
 
 
-def mace(poses: np.ndarray):
+def mace_single(poses: np.ndarray):
     poses = normalize_hands(poses)
     return paired_error(poses)
+
+
+def mace(poses: np.ndarray):
+    assert poses.shape[1:] == (261, 6, 21, 3)
+
+    print(poses.shape)
+    runs = [mace_single(p) for p in poses]
+    print(runs)
+    return {
+        "mean": np.average(runs),
+        "std": np.std(runs)
+    }
