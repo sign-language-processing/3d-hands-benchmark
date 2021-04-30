@@ -1,17 +1,16 @@
-from tqdm import tqdm
-from PIL import Image as PILImage
-import numpy as np
-import mediapipe as mp
-import cv2
 import os
+from multiprocessing import cpu_count, Pool
 
-# For static images:
-hands = mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0)
+import cv2
+import mediapipe as mp
+import numpy as np
+from PIL import Image as PILImage
+from tqdm import tqdm
+from tqdm.contrib.concurrent import process_map
 
 
-def pose_image(filename: str, image_crop_scale=1.5):
+def pose_image(hands, transparent_image: PILImage, image_crop_scale=1.5):
     # MediaPipe expects an RGB tensor, with some padding
-    transparent_image = PILImage.open(filename)
     im_size = int(max(transparent_image.size[0], transparent_image.size[1]) * image_crop_scale)
     image = PILImage.new("RGB", (im_size, im_size), (255, 255, 255))
     paste_loc = ((im_size - transparent_image.size[0]) // 2, (im_size - transparent_image.size[1]) // 2)
@@ -24,31 +23,55 @@ def pose_image(filename: str, image_crop_scale=1.5):
 
     # If hand not found, return 0s
     if not pose.multi_hand_landmarks:
-        print("failed to extract hand pose")
-        return np.zeros(shape=(21, 3))
+        return None
 
     image_height, image_width, _ = image.shape
     landmarks = [pose.multi_hand_landmarks[0].landmark[i] for i in range(21)]
     return np.array([[l.x * image_width, l.y * image_height, l.z * image_width] for l in landmarks])
 
 
-if __name__ == "__main__":
+def pose_crop(crop: float):
+    hands = mp.solutions.hands.Hands(static_image_mode=True, max_num_hands=1, min_detection_confidence=0)
 
-    hands_dir = "../../hands"
     poses = []
-    for hs_group in tqdm(sorted(os.listdir(hands_dir))):
-        for hs in tqdm(sorted(os.listdir(os.path.join(hands_dir, hs_group)))):
-            hs_poses = []
-            hs_path = os.path.join(hands_dir, hs_group, hs)
-            for h in tqdm(sorted(os.listdir(hs_path))):
-                pose = pose_image(os.path.join(hs_path, h), 1.5)
-                assert pose.shape == (21, 3)
-                hs_poses.append(pose)
+    for hs in images:
+        hs_poses = []
+        for h in hs:
+            pose = pose_image(hands, h, crop)
+            if pose is None:
+                pose = np.zeros(shape=(21, 3))
+            assert pose.shape == (21, 3)
+            hs_poses.append(pose)
 
-            # Hand shape 01-05-015 only includes 4 orientations
-            for i in range(len(hs_poses), 6):
-                hs_poses.append(np.zeros((21, 3)))
-            poses.append(hs_poses)
+        # Hand shape 01-05-015 only includes 4 orientations
+        for i in range(len(hs_poses), 6):
+            hs_poses.append(np.zeros((21, 3)))
+        poses.append(hs_poses)
+    return np.array(poses)
+
+
+if __name__ == "__main__":
+    print("Loading images")
+    images = []
+    hands_dir = "../../hands"
+    for hs_group in tqdm(sorted(os.listdir(hands_dir))):
+        for hs in sorted(os.listdir(os.path.join(hands_dir, hs_group))):
+            group = []
+            hs_path = os.path.join(hands_dir, hs_group, hs)
+            for h in sorted(os.listdir(hs_path)):
+                os.path.join(hs_path, h)
+                with open(os.path.join(hs_path, h), "rb") as img:
+                    group.append(PILImage.open(img).copy())
+            images.append(group)
+
+    n_crops = cpu_count()
+    crops = [1 + 2 * i / n_crops for i in range(n_crops)]  # range [1,3)
+
+    with Pool(cpu_count()) as p:
+        crops_poses = list(process_map(pose_crop, crops, max_workers=cpu_count()))
+
+    crops_poses = np.array(crops_poses)
+    print("Saving", crops_poses.shape)
 
     with open('submission.npy', 'wb') as f:
-        np.save(f, np.array(poses, dtype=np.float32))
+        np.save(f, np.array(crops_poses, dtype=np.float32))
