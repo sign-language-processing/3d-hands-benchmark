@@ -11,6 +11,7 @@ Every hand shape has images from 6 angles, consistent with different SignWriting
 
 - [Evaluation Metrics](#evaluation-metrics)
     * [Multi Angle Consistency Error (MACE)](#multi-angle-consistency-error-mace)
+    * [Crop Consistency Error (CCE)](#crop-consistency-error-cce)
 - [How to submit your system?](#how-to-submit-your-system)
 
 Given the following 6 shape orientations:
