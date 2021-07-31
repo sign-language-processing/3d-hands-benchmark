@@ -9,6 +9,11 @@ All images are of the same hand, of an adult white man.
 
 Every hand shape has images from 6 angles, consistent with different SignWriting orientations (view and plane).
 
+- [Evaluation Metrics](#evaluation-metrics)
+    * [Multi Angle Consistency Error (MACE)](#multi-angle-consistency-error-mace)
+    * [Crop Consistency Error (CCE)](#crop-consistency-error-cce)
+- [How to submit your system?](#how-to-submit-your-system)
+
 Given the following 6 shape orientations:
 
 ![shapes](assets/orientations.png)
