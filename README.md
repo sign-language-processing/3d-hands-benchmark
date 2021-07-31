@@ -60,14 +60,11 @@ We scale the hand such that the middle finger's metacarpal bone is of constant l
 
 ![scale](assets/poses_scale.png)
 
-We overlay the normalized hands one on top of another:
+We overlay all of the normalized hands by shifting the wrist point of each estimated hand to (0,0,0),
 
 ![overlay](assets/poses_overlay.png)
 
-And calculate the average of pairwise distance for each pair of hands.
-
-![formula](https://latex.codecogs.com/svg.latex?\frac{1}{H^2}\sum_{h_1}^H{\sum_{h_2}^H{}}%20\lVert{h_1}-{h_2}\rVert_2)
-
+And calculate the average standard deviation of all pose landmarks.
 
 
 
@@ -97,4 +94,8 @@ In it, put as many submission files as you want. All files ending with `.npy` ar
 
 Ideally, you should also include code to reproduce your submission in your submission directory.
 
+## Benchmark
 
+|System Name|Runs|MACE|CCE|
+|------|---|---|---|
+|mediapipe/submission|96|921±335|5958|

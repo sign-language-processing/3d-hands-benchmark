@@ -17,9 +17,16 @@ for path in Path('systems').rglob('*.npy'):
         median_poses = np.expand_dims(np.median(poses, axis=0), 0)
 
         systems[system_name] = {
+            'n': len(poses),
             'mace': mace(poses),
             'cce': cce(poses)
         }
         systems[system_name]['mace']['median'] = mace(median_poses)
 
 print(dumps(systems, indent=2))
+
+print('|System Name|Runs|MACE|CCE|')
+print('|------|---|---|---|')
+for system_name, metrics in systems.items():
+    print(
+        f'|{system_name}|{metrics["n"]}|{round(metrics["mace"]["mean"])}±{round(metrics["mace"]["std"])}|{round(metrics["cce"])}|')

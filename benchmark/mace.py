@@ -77,33 +77,20 @@ def normalized_hand(pose: np.ndarray):
     return pose
 
 
-def paired_error(poses: np.ndarray):
-    error = 0
-    for hs in poses:
-        hs_error = 0
-        for h1 in hs:
-            for h2 in hs:
-                hs_error += np.power((h1 - h2), 2).sum()
-        error += hs_error / (len(hs) ** 2)
-
-    return error / len(poses)
-
-
 def normalize_hands(poses: np.ndarray):
     return np.array([[normalized_hand(p) for p in ps] for ps in poses])
 
 
 def mace_single(poses: np.ndarray):
     poses = normalize_hands(poses)
-    return paired_error(poses)
+    poses_std = np.std(poses, axis=0)
+    return poses_std.sum().item()
 
 
 def mace(poses: np.ndarray):
     assert poses.shape[1:] == (261, 6, 21, 3)
 
-    print(poses.shape)
     runs = [mace_single(p) for p in poses]
-    print(runs)
     return {
         "mean": np.average(runs),
         "std": np.std(runs)
