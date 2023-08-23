@@ -35,7 +35,7 @@ You run 3D pose estimation per image:
 Some of the metrics here can be used as self-supervised losses.
 You can optimize your 3D hand pose model on these metrics on any image of a hand, without annotating a dataset.
 
-*These metrics does not measure the success of the pose estimation system at estimating the actual pose,
+*These metrics do not measure the success of the pose estimation system at estimating the actual pose,
 and thus should always be used in addition to other metrics.
 One optimal solution with 0 error would be to predict the same tensor for all hands.
 
@@ -48,8 +48,8 @@ the pose estimation result for each should be consistent.
 We overlay all of the estimated hands by shifting the wrist point of each estimated hand to (0,0,0),
 and calculate the average standard deviation of all pose landmarks.
 
-![cce](assets/crop_consistency_error.gif)
 
+![cce](assets/crop_consistency_error.gif)
 
 ### Multi Angle Consistency Error (MACE)
 
@@ -70,6 +70,15 @@ We overlay all of the normalized hands by shifting the wrist point of each estim
 ![overlay](assets/poses_overlay.png)
 
 And calculate the average standard deviation of all pose landmarks.
+
+
+### Visualization
+
+|      | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+|------|---|---|---|---|---|---|---|---|---|---|
+| CCE  | ![0](assets/cce/0.png)  | ![1](assets/cce/1.png) | ![2](assets/cce/2.png) | ![3](assets/cce/3.png) | ![4](assets/cce/4.png) | ![5](assets/cce/5.png) | ![6](assets/cce/6.png) | ![7](assets/cce/7.png) | ![8](assets/cce/8.png) | ![9](assets/cce/9.png) |
+| MACE | ![0](assets/mace/0.png) | ![1](assets/mace/1.png) | ![2](assets/mace/2.png) | ![3](assets/mace/3.png) | ![4](assets/mace/4.png) | ![5](assets/mace/5.png) | ![6](assets/mace/6.png) | ![7](assets/mace/7.png) | ![8](assets/mace/8.png) | ![9](assets/mace/9.png) |
+
 
 
 
@@ -103,4 +112,6 @@ Ideally, you should also include code to reproduce your submission in your submi
 
 |System Name|Runs|MACE|CCE|
 |------|---|---|---|
-|mediapipe/submission|96|921±335|5958|
+|mediapipe/v0.8.11|48|20897±714|5089|
+|mediapipe/v0.9.3.0|48|20897±714|5089|
+|mediapipe/v0.10.3|48|20897±714|5089|
