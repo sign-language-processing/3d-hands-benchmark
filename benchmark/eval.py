@@ -2,12 +2,15 @@ from json import dumps
 from pathlib import Path
 
 import numpy as np
+from tqdm import tqdm
 
 from benchmark.cce import cce
 from benchmark.mace import mace
 
 systems = {}
-for path in Path('systems').rglob('*.npy'):
+files = Path('systems').rglob('*.npy')
+files = sorted(files, key=lambda f: f.name)
+for path in tqdm(files):
     system_name = str(path)[len('systems/'):-len('.npy')]
 
     with open(path, 'rb') as f:
