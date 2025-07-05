@@ -115,3 +115,15 @@ Ideally, you should also include code to reproduce your submission in your submi
 |mediapipe/v0.8.11|48|20897±714|5089|
 |mediapipe/v0.9.3.0|48|20897±714|5089|
 |mediapipe/v0.10.3|48|20897±714|5089|
+
+
+## Cite
+
+```bibtex
+@misc{moryossef2022-3d-hand-benchmark, 
+    title={3D Hand Pose Benchmark},
+    author={Moryossef, Amit},
+    howpublished={\url{https://github.com/sign-language-processing/3d-hands-benchmark}},
+    year={2022}
+}
+```
